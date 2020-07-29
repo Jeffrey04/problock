@@ -6,11 +6,12 @@ import Container from "@material-ui/core/Container";
 import Modal from "@material-ui/core/Modal";
 import Paper from "@material-ui/core/Paper";
 import React from "react";
+import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 
-export default function () {
+export default function (props) {
   const isOpened = useSelector(
-    (state) => state.ui.config.type === GAME_CONFIG.BOARD
+    (state) => state.ui.config.type === GAME_CONFIG.TILES
   );
   const dispatch = useDispatch();
 
@@ -28,9 +29,8 @@ export default function () {
       >
         <Container>
           <form noValidate autoComplete="off">
-            <Typography variant="h2">Board Configuration</Typography>
+            <Typography variant="h2">General Tiles Configuration</Typography>
             <Typography variant="h3">Properties</Typography>
-            <Typography variant="h4">@neighbors</Typography>
             <Typography variant="h3">Events</Typography>
             <Typography variant="body1">Some quick board properties</Typography>
             <Button variant="contained">Save</Button>

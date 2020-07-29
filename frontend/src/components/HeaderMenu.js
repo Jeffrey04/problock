@@ -31,7 +31,7 @@ export default function () {
             }}
             color="inherit"
           >
-            Tile Config
+            Tiles Config
           </Button>
         </Toolbar>
       </AppBar>

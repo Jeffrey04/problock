@@ -5,7 +5,7 @@ import Tile from "./Tile";
 
 export default function (props) {
   return (
-    <GridList cellHeight={160} spacing={5} cols={props.columns}>
+    <GridList cellHeight="auto" spacing={5} cols={props.columns}>
       {[...Array(props.rows).keys()].map((row) =>
         [...Array(props.columns).keys()].map((column) => (
           <GridListTile key={(row + 1) * column}>
