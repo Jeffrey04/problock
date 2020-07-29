@@ -13,20 +13,10 @@ import React from "react";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Typography from "@material-ui/core/Typography";
 
-function showActions(row, column, dispatch) {
+function showActions(handleClick) {
   return (
     <CardActions disableSpacing>
-      <IconButton
-        onClick={() =>
-          dispatch(
-            boardUpdateConfig({
-              type: GAME_CONFIG.TILE,
-              param: { row: row, column: column },
-            })
-          )
-        }
-        aria-label="add to favorites"
-      >
+      <IconButton onClick={handleClick} aria-label="add to favorites">
         <SettingsIcon />
       </IconButton>
     </CardActions>
@@ -46,7 +36,15 @@ export default function ({ row, column }) {
           Word of the Day
         </Typography>
       </CardContent>
-      {isRunning === false && showActions(row, column, dispatch)}
+      {isRunning === false &&
+        showActions(() =>
+          dispatch(
+            boardUpdateConfig({
+              type: GAME_CONFIG.TILE,
+              param: { row: row, column: column },
+            })
+          )
+        )}
     </Card>
   );
 }

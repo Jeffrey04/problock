@@ -17,7 +17,6 @@ import Typography from "@material-ui/core/Typography";
 export default function () {
   const boardState = useSelector((state) => state.ui.state);
   const dispatch = useDispatch();
-  console.log(boardState);
 
   return (
     <React.Fragment>
