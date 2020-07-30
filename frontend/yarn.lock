@@ -2376,7 +2376,7 @@ babel-jest@^24.9.0:
     chalk "^2.4.2"
     slash "^2.0.0"
 
-babel-loader@8.1.0:
+babel-loader@8.1.0, babel-loader@^8.1.0:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/babel-loader/-/babel-loader-8.1.0.tgz#c611d5112bd5209abe8b9fa84c3e4da25275f1c3"
   integrity sha512-7q7nC1tYOrqvUrN3LQK4GwSk/TQorZSOlO9C+RZDZpODgyN4ZlCqE5q9cDsyWOliN+aU9B4JX01xK9eJXowJLw==
@@ -9396,6 +9396,12 @@ rsvp@^4.8.4:
   version "4.8.5"
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"
   integrity sha512-nfMOlASu9OnRJo1mbEk2cz0D56a1MBNrJ7orjRZQG10XDyuvwksKbuXNp6qa+kbn839HwjwhBzhFmdsaEAfauA==
+
+"ruler@https://github.com/Jeffrey04/ruler.git":
+  version "0.1.0"
+  resolved "https://github.com/Jeffrey04/ruler.git#2ea2a5bb8384f9c07663355080af6dd407292d94"
+  dependencies:
+    lodash "^4.17.19"
 
 run-async@^2.2.0, run-async@^2.4.0:
   version "2.4.1"

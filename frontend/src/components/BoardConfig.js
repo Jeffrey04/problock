@@ -1,4 +1,4 @@
-import { GAME_CONFIG, boardUpdateConfig } from "../features/ui/UISlice";
+import { GAME_CONFIG, UIUpdateConfig } from "../features/ui/UISlice";
 import { useDispatch, useSelector } from "react-redux";
 
 import Button from "@material-ui/core/Button";
@@ -17,7 +17,7 @@ export default function () {
   return (
     <Modal
       open={isOpened}
-      onClose={() => dispatch(boardUpdateConfig({ type: GAME_CONFIG.NONE }))}
+      onClose={() => dispatch(UIUpdateConfig({ type: GAME_CONFIG.NONE }))}
       aria-labelledby="simple-modal-title"
       aria-describedby="simple-modal-description"
     >

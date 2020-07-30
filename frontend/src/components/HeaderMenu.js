@@ -1,4 +1,4 @@
-import { GAME_CONFIG, boardUpdateConfig } from "../features/ui/UISlice";
+import { GAME_CONFIG, UIUpdateConfig } from "../features/ui/UISlice";
 
 import AppBar from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
@@ -19,7 +19,7 @@ export default function () {
           </Typography>
           <Button
             onClick={() => {
-              dispatch(boardUpdateConfig({ type: GAME_CONFIG.BOARD }));
+              dispatch(UIUpdateConfig({ type: GAME_CONFIG.BOARD }));
             }}
             color="inherit"
           >
@@ -27,7 +27,7 @@ export default function () {
           </Button>
           <Button
             onClick={() => {
-              dispatch(boardUpdateConfig({ type: GAME_CONFIG.TILES }));
+              dispatch(UIUpdateConfig({ type: GAME_CONFIG.TILES }));
             }}
             color="inherit"
           >

@@ -19,15 +19,15 @@ const uiSlice = createSlice({
     config: { type: GAME_CONFIG.NONE },
   },
   reducers: {
-    boardUpdateState(state, action) {
+    UIUpdateState(state, action) {
       return Object.assign({}, state, { state: action.payload });
     },
-    boardUpdateConfig(state, action) {
+    UIUpdateConfig(state, action) {
       return Object.assign({}, state, { config: action.payload });
     },
   },
 });
 
-export const { boardUpdateState, boardUpdateConfig } = uiSlice.actions;
+export const { UIUpdateState, UIUpdateConfig } = uiSlice.actions;
 
 export default uiSlice.reducer;

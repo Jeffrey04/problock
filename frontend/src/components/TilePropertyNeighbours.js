@@ -1,8 +1,7 @@
-import { BOARD_NEIGHBOURS } from "../features/board/BoardSlice";
+import { BOARD_NEIGHBOURS } from "../features/tiles/TilesSlice";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormGroup from "@material-ui/core/FormGroup";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormLabel from "@material-ui/core/FormLabel";
 import GridList from "@material-ui/core/GridList";
@@ -48,23 +47,21 @@ export default function ({ neighbours, action }) {
   };
 
   return (
-    <FormControl fullWidth component="fieldset">
-      <FormLabel component="legend">Neighbours</FormLabel>
-      <FormGroup>
-        <GridList cellHeight="auto" cols={3}>
-          {Object.entries(tiles).map(([value, label]) => (
-            <GridListTile key={value}>
-              <Neighbour
-                neighbours={neighbours}
-                action={action}
-                label={label}
-                value={value}
-                disabled={value === label}
-              />
-            </GridListTile>
-          ))}
-        </GridList>
-      </FormGroup>
+    <FormControl fullWidth margin="normal" component="fieldset">
+      <FormLabel component="legend">@neighbours</FormLabel>
+      <GridList cellHeight="auto" cols={3}>
+        {Object.entries(tiles).map(([value, label]) => (
+          <GridListTile key={value}>
+            <Neighbour
+              neighbours={neighbours}
+              action={action}
+              label={label}
+              value={value}
+              disabled={value === label}
+            />
+          </GridListTile>
+        ))}
+      </GridList>
       <FormHelperText>The tiles to be considered as neighbours</FormHelperText>
     </FormControl>
   );

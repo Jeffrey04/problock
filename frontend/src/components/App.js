@@ -1,4 +1,4 @@
-import { BOARD_STATE, boardUpdateState } from "../features/ui/UISlice";
+import { BOARD_STATE, UIUpdateState } from "../features/ui/UISlice";
 import { useDispatch, useSelector } from "react-redux";
 
 import Board from "./Board";
@@ -35,7 +35,7 @@ export default function () {
         style={{ position: "absolute", bottom: "2em", right: "2em" }}
         onClick={() =>
           dispatch(
-            boardUpdateState(
+            UIUpdateState(
               boardState === BOARD_STATE.RUNNING
                 ? BOARD_STATE.PAUSED
                 : BOARD_STATE.RUNNING
