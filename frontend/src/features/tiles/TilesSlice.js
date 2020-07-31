@@ -33,6 +33,63 @@ const tilesSlice = createSlice({
       ],
       display: { type: DISPLAY_TYPE.NONE },
     },
+    events: [
+      {
+        trigger: { type: "keypress", key: "@space" },
+        actions: [
+          {
+            condition: [
+              "basic.Context",
+              ["array.Length", ["basic.Field", "@neighbours"]],
+              ["condition.In", 2, 3],
+            ],
+            set: {
+              field: "display",
+              rule: [
+                "basic.Value",
+                { type: DISPLAY_TYPE.TEXT, value: "ALIVE" },
+              ],
+            },
+          },
+          {
+            condition: [
+              "boolean.Not",
+              [
+                "basic.Context",
+                ["array.Length", ["basic.Field", "@neighbours"]],
+                ["condition.In", 2, 3],
+              ],
+            ],
+            action: {
+              field: "display",
+              rule: ["basic.Value", { type: DISPLAY_TYPE.NONE }],
+            },
+          },
+        ],
+      },
+      {
+        trigger: { type: "click" },
+        actions: [
+          {
+            condition: [],
+            set: {
+              field: "display",
+              rule: [
+                "basic.Value",
+                { type: DISPLAY_TYPE.TEXT, value: "ALIVE" },
+              ],
+            },
+          },
+          {
+            condition: [],
+            set: {
+              field: "display",
+              rule: ["basic.Value", { type: DISPLAY_TYPE.NONE }],
+            },
+          },
+        ],
+      },
+    ],
   },
   reducers: {
     tilesUpdateNeighbours(state, action) {
