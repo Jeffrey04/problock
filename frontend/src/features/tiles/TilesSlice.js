@@ -17,6 +17,11 @@ export const DISPLAY_TYPE = {
   EMOJI: "EMOJI",
 };
 
+export const TRIGGER_TYPE = {
+  KEYPRESS: "keypress",
+  CLICK: "click",
+};
+
 const tilesSlice = createSlice({
   name: "tiles",
   initialState: {
@@ -35,7 +40,7 @@ const tilesSlice = createSlice({
     },
     events: [
       {
-        trigger: { type: "keypress", key: "@space" },
+        trigger: { type: TRIGGER_TYPE.KEYPRESS, key: "@space" },
         actions: [
           {
             condition: [
@@ -60,7 +65,7 @@ const tilesSlice = createSlice({
                 ["condition.In", 2, 3],
               ],
             ],
-            action: {
+            set: {
               field: "display",
               rule: ["basic.Value", { type: DISPLAY_TYPE.NONE }],
             },
@@ -68,7 +73,7 @@ const tilesSlice = createSlice({
         ],
       },
       {
-        trigger: { type: "click" },
+        trigger: { type: TRIGGER_TYPE.CLICK },
         actions: [
           {
             condition: [],
