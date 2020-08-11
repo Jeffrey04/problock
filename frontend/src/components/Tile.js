@@ -45,7 +45,7 @@ export default function ({ row, column }) {
         )}
         {display.type === DISPLAY_TYPE.EMOJI && display.value}
       </CardContent>
-      {isRunning === false &&
+      {/*isRunning === false &&
         showActions(() =>
           dispatch(
             UIUpdateConfig({
@@ -53,7 +53,7 @@ export default function ({ row, column }) {
               param: { row: row, column: column },
             })
           )
-        )}
+          )*/}
     </Card>
   );
 }

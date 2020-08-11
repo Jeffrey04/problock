@@ -29,6 +29,7 @@ export default function () {
         <Typography variant="h1">Problock</Typography>
         <Board rows={4} columns={4} />
       </Container>
+      {/*
       <Fab
         color="primary"
         aria-label="add"
@@ -49,6 +50,7 @@ export default function () {
           <PlayArrowIcon />
         )}
       </Fab>
+       */}
     </React.Fragment>
   );
 }
