@@ -43,31 +43,34 @@ const tilesSlice = createSlice({
         trigger: { type: TRIGGER_TYPE.KEYPRESS, key: "@space" },
         actions: [
           {
-            condition: [
+            condition: JSON.stringify([
               "basic.Context",
               ["array.Length", ["basic.Field", "@neighbours"]],
               ["condition.In", 2, 3],
-            ],
+            ]),
             set: {
               field: "display",
-              rule: [
+              rule: JSON.stringify([
                 "basic.Value",
                 { type: DISPLAY_TYPE.TEXT, value: "ALIVE" },
-              ],
+              ]),
             },
           },
           {
-            condition: [
+            condition: JSON.stringify([
               "boolean.Not",
               [
                 "basic.Context",
                 ["array.Length", ["basic.Field", "@neighbours"]],
                 ["condition.In", 2, 3],
               ],
-            ],
+            ]),
             set: {
               field: "display",
-              rule: ["basic.Value", { type: DISPLAY_TYPE.NONE }],
+              rule: JSON.stringify([
+                "basic.Value",
+                { type: DISPLAY_TYPE.NONE },
+              ]),
             },
           },
         ],
@@ -76,20 +79,31 @@ const tilesSlice = createSlice({
         trigger: { type: TRIGGER_TYPE.CLICK },
         actions: [
           {
-            condition: [],
+            condition: JSON.stringify([
+              "condition.Equal",
+              ["basic.Field", "display"],
+              { type: DISPLAY_TYPE.NONE },
+            ]),
             set: {
               field: "display",
-              rule: [
+              rule: JSON.stringify([
                 "basic.Value",
                 { type: DISPLAY_TYPE.TEXT, value: "ALIVE" },
-              ],
+              ]),
             },
           },
           {
-            condition: [],
+            condition: JSON.stringify([
+              "condition.Equal",
+              ["basic.Field", "display"],
+              { type: DISPLAY_TYPE.TEXT, value: "ALIVE" },
+            ]),
             set: {
               field: "display",
-              rule: ["basic.Value", { type: DISPLAY_TYPE.NONE }],
+              rule: JSON.stringify([
+                "basic.Value",
+                { type: DISPLAY_TYPE.NONE },
+              ]),
             },
           },
         ],
@@ -111,12 +125,18 @@ const tilesSlice = createSlice({
         }),
       });
     },
+    tilesUpdateEvent(state, action) {
+      return Object.assign({}, state, {
+        events: action.payload,
+      });
+    },
   },
 });
 
 export const {
   tilesUpdatePropertyNeighbours,
   tilesUpdateDisplay,
+  tilesUpdateEvent,
 } = tilesSlice.actions;
 
 export default tilesSlice.reducer;

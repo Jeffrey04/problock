@@ -23,6 +23,44 @@ import TilePropertyNeighbours from "./TilePropertyNeighbours";
 import Typography from "@material-ui/core/Typography";
 import ruler from "ruler";
 
+function fieldId(field_name, index_event, index_action) {
+  return field_name
+    .concat("-")
+    .concat(index_event)
+    .concat("-")
+    .concat(index_action);
+}
+
+function triggerTypeOnChange(event, events, index_event) {
+  return events.map((incoming, idx_event) => {
+    if (idx_event === index_event) {
+      return {
+        trigger: Object.assign({}, incoming.trigger, {
+          type: event.target.value,
+        }),
+        actions: incoming.actions,
+      };
+    } else {
+      return incoming;
+    }
+  });
+}
+
+function triggerKeyOnChange(event, events, index_event) {
+  return events.map((incoming, idx_event) => {
+    if (idx_event === index_event) {
+      return {
+        trigger: Object.assign({}, incoming.trigger, {
+          key: event.target.value,
+        }),
+        actions: incoming.actions,
+      };
+    } else {
+      return incoming;
+    }
+  });
+}
+
 function conditionOnChange(event, events, index_event, index_rule) {
   return events.map((incoming, idx_event) => {
     if (idx_event === index_event) {
@@ -31,6 +69,46 @@ function conditionOnChange(event, events, index_event, index_rule) {
         actions: incoming.actions.map((rule, idx_rule) =>
           idx_rule === index_rule
             ? { condition: event.target.value, set: rule.set }
+            : rule
+        ),
+      };
+    } else {
+      return incoming;
+    }
+  });
+}
+
+function setOnChange(event, events, index_event, index_rule) {
+  return events.map((incoming, idx_event) => {
+    if (idx_event === index_event) {
+      return {
+        trigger: incoming.trigger,
+        actions: incoming.actions.map((rule, idx_rule) =>
+          idx_rule === index_rule
+            ? {
+                condition: rule.condition,
+                set: Object.assign({}, rule.set, { field: event.target.value }),
+              }
+            : rule
+        ),
+      };
+    } else {
+      return incoming;
+    }
+  });
+}
+
+function actionRuleOnChange(event, events, index_event, index_rule) {
+  return events.map((incoming, idx_event) => {
+    if (idx_event === index_event) {
+      return {
+        trigger: incoming.trigger,
+        actions: incoming.actions.map((rule, idx_rule) =>
+          idx_rule === index_rule
+            ? {
+                condition: rule.condition,
+                set: Object.assign({}, rule.set, { rule: event.target.value }),
+              }
             : rule
         ),
       };
@@ -142,6 +220,13 @@ export default function () {
                     label="Type"
                     value={event_tile.trigger.type}
                     size="medium"
+                    onChange={(e) =>
+                      dispatch(
+                        tilesUpdateEvent(
+                          triggerTypeOnChange(e, events, index_tile)
+                        )
+                      )
+                    }
                   >
                     <MenuItem value={TRIGGER_TYPE.KEYPRESS}>Keypress</MenuItem>
                     <MenuItem value={TRIGGER_TYPE.CLICK}>Click</MenuItem>
@@ -152,6 +237,13 @@ export default function () {
                       id={"event-trigger-value-".concat(index_tile)}
                       label="Key"
                       value={event_tile.trigger.key}
+                      onChange={(e) =>
+                        dispatch(
+                          tilesUpdateEvent(
+                            triggerKeyOnChange(e, events, index_tile)
+                          )
+                        )
+                      }
                       size="medium"
                     ></TextField>
                   )}
@@ -166,12 +258,17 @@ export default function () {
                     <FormLabel component="legend">Rule {index_rule}</FormLabel>
                     <TextField
                       fullWidth
-                      id={"event-condition-value-".concat(index_tile)}
+                      id={fieldId(
+                        "event-condition-value",
+                        index_tile,
+                        index_rule
+                      )}
                       label="Condition"
                       value={rule.condition}
                       size="medium"
                       error={
-                        error.id === "event-condition-value-".concat(index_tile)
+                        error.id ===
+                        fieldId("event-condition-value", index_tile, index_rule)
                       }
                       onChange={(e) => {
                         dispatch(
@@ -183,13 +280,21 @@ export default function () {
                         if (ruleIsValid(e) === false) {
                           dispatch(
                             updateError({
-                              id: "event-condition-value-".concat(index_tile),
+                              id: fieldId(
+                                "event-condition-value",
+                                index_tile,
+                                index_rule
+                              ),
                               message: "Condition is malformed",
                             })
                           );
                         } else if (
                           error.id ===
-                          "event-condition-value-".concat(index_tile)
+                          fieldId(
+                            "event-condition-value",
+                            index_tile,
+                            index_rule
+                          )
                         ) {
                           dispatch(clearError());
                         }
@@ -203,13 +308,54 @@ export default function () {
                         label="field"
                         value={rule.set.field}
                         size="medium"
+                        onChange={(e) =>
+                          dispatch(
+                            tilesUpdateEvent(
+                              setOnChange(e, events, index_tile, index_rule)
+                            )
+                          )
+                        }
                       ></TextField>
                       <TextField
                         fullWidth
                         multiline
-                        id={"event-trigger-value-".concat(index_tile)}
+                        id={fieldId("event-set-rule", index_tile, index_rule)}
                         label="rule"
                         value={rule.set.rule}
+                        error={
+                          fieldId("event-set-rule", index_tile, index_rule) ===
+                          error.id
+                        }
+                        onChange={(e) => {
+                          dispatch(
+                            tilesUpdateEvent(
+                              actionRuleOnChange(
+                                e,
+                                events,
+                                index_tile,
+                                index_rule
+                              )
+                            )
+                          );
+
+                          if (ruleIsValid(e) === false) {
+                            dispatch(
+                              updateError({
+                                id: fieldId(
+                                  "event-set-rule",
+                                  index_tile,
+                                  index_rule
+                                ),
+                                message: "Condition is malformed",
+                              })
+                            );
+                          } else if (
+                            error.id ===
+                            fieldId("event-set-rule", index_tile, index_rule)
+                          ) {
+                            dispatch(clearError());
+                          }
+                        }}
                         size="medium"
                       ></TextField>
                     </FormControl>
