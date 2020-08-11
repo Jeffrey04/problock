@@ -6,6 +6,7 @@ import {
   tilesUpdatePropertyNeighbours,
 } from "../features/tiles/TilesSlice";
 import { GAME_CONFIG, UIUpdateConfig } from "../features/ui/UISlice";
+import { clearError, updateError } from "../features/error/ErrorSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 import Container from "@material-ui/core/Container";
@@ -21,7 +22,6 @@ import { TextField } from "@material-ui/core";
 import TilePropertyNeighbours from "./TilePropertyNeighbours";
 import Typography from "@material-ui/core/Typography";
 import ruler from "ruler";
-import { updateError } from "../features/error/ErrorSlice";
 
 function conditionOnChange(event, events, index_event, index_rule) {
   return events.map((incoming, idx_event) => {
@@ -41,7 +41,13 @@ function conditionOnChange(event, events, index_event, index_rule) {
 }
 
 function ruleIsValid(event) {
-  return ruler.parse(event.target.value) instanceof Function;
+  try {
+    let rule = JSON.parse(event.target.value);
+
+    return ruler.parse(rule) instanceof Function;
+  } catch (e) {
+    return false;
+  }
 }
 
 export default function () {
@@ -181,6 +187,11 @@ export default function () {
                               message: "Condition is malformed",
                             })
                           );
+                        } else if (
+                          error.id ===
+                          "event-condition-value-".concat(index_tile)
+                        ) {
+                          dispatch(clearError());
                         }
                       }}
                     ></TextField>
