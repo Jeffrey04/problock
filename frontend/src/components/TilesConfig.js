@@ -2,9 +2,11 @@ import {
   DISPLAY_TYPE,
   TRIGGER_TYPE,
   tilesUpdateDisplay,
+  tilesUpdateEvent,
   tilesUpdatePropertyNeighbours,
 } from "../features/tiles/TilesSlice";
 import { GAME_CONFIG, UIUpdateConfig } from "../features/ui/UISlice";
+import { clearError, updateError } from "../features/error/ErrorSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 import Container from "@material-ui/core/Container";
@@ -19,6 +21,137 @@ import React from "react";
 import { TextField } from "@material-ui/core";
 import TilePropertyNeighbours from "./TilePropertyNeighbours";
 import Typography from "@material-ui/core/Typography";
+import ruler from "ruler";
+
+function fieldId(field_name, index_event, index_action) {
+  return field_name
+    .concat("-")
+    .concat(index_event)
+    .concat("-")
+    .concat(index_action);
+}
+
+function triggerTypeOnChange(event, events, index_event) {
+  return events.map((incoming, idx_event) => {
+    if (idx_event === index_event) {
+      return {
+        trigger: Object.assign({}, incoming.trigger, {
+          type: event.target.value,
+        }),
+        actions: incoming.actions,
+      };
+    } else {
+      return incoming;
+    }
+  });
+}
+
+function triggerKeyOnChange(event, events, index_event) {
+  return events.map((incoming, idx_event) => {
+    if (idx_event === index_event) {
+      return {
+        trigger: Object.assign({}, incoming.trigger, {
+          key: event.target.value,
+        }),
+        actions: incoming.actions,
+      };
+    } else {
+      return incoming;
+    }
+  });
+}
+
+function conditionOnChange(event, events, index_event, index_rule) {
+  return events.map((incoming, idx_event) => {
+    if (idx_event === index_event) {
+      return {
+        trigger: incoming.trigger,
+        actions: incoming.actions.map((rule, idx_rule) =>
+          idx_rule === index_rule
+            ? {
+                condition: event.target.value,
+                condition_neighbour: rule.condition_neighbour,
+                set: rule.set,
+              }
+            : rule
+        ),
+      };
+    } else {
+      return incoming;
+    }
+  });
+}
+
+function conditionNeighbourOnChange(event, events, index_event, index_rule) {
+  return events.map((incoming, idx_event) => {
+    if (idx_event === index_event) {
+      return {
+        trigger: incoming.trigger,
+        actions: incoming.actions.map((rule, idx_rule) =>
+          idx_rule === index_rule
+            ? {
+                condition: rule.condition,
+                condition_neighbour: event.target.value,
+                set: rule.set,
+              }
+            : rule
+        ),
+      };
+    } else {
+      return incoming;
+    }
+  });
+}
+
+function setOnChange(event, events, index_event, index_rule) {
+  return events.map((incoming, idx_event) => {
+    if (idx_event === index_event) {
+      return {
+        trigger: incoming.trigger,
+        actions: incoming.actions.map((rule, idx_rule) =>
+          idx_rule === index_rule
+            ? {
+                condition: rule.condition,
+                set: Object.assign({}, rule.set, { field: event.target.value }),
+              }
+            : rule
+        ),
+      };
+    } else {
+      return incoming;
+    }
+  });
+}
+
+function actionRuleOnChange(event, events, index_event, index_rule) {
+  return events.map((incoming, idx_event) => {
+    if (idx_event === index_event) {
+      return {
+        trigger: incoming.trigger,
+        actions: incoming.actions.map((rule, idx_rule) =>
+          idx_rule === index_rule
+            ? {
+                condition: rule.condition,
+                set: Object.assign({}, rule.set, { rule: event.target.value }),
+              }
+            : rule
+        ),
+      };
+    } else {
+      return incoming;
+    }
+  });
+}
+
+function ruleIsValid(event) {
+  try {
+    let rule = JSON.parse(event.target.value);
+
+    return ruler.parse(rule) instanceof Function;
+  } catch (e) {
+    return false;
+  }
+}
 
 export default function () {
   const isOpened = useSelector(
@@ -27,6 +160,7 @@ export default function () {
   const dispatch = useDispatch();
   const properties = useSelector((state) => state.tiles.properties);
   const events = useSelector((state) => state.tiles.events);
+  const error = useSelector((state) => state.error);
 
   return (
     <Modal
@@ -95,7 +229,12 @@ export default function () {
             </div>
             <Typography variant="h3">Events</Typography>
             {events.map((event_tile, index_tile) => (
-              <FormControl fullWidth margin="normal" component="fieldset">
+              <FormControl
+                key={index_tile}
+                fullWidth
+                margin="normal"
+                component="fieldset"
+              >
                 <FormLabel component="legend">Event {index_tile + 1}</FormLabel>
                 <FormControl fullWidth margin="normal" component="fieldset">
                   <FormLabel component="legend">Trigger</FormLabel>
@@ -106,6 +245,13 @@ export default function () {
                     label="Type"
                     value={event_tile.trigger.type}
                     size="medium"
+                    onChange={(e) =>
+                      dispatch(
+                        tilesUpdateEvent(
+                          triggerTypeOnChange(e, events, index_tile)
+                        )
+                      )
+                    }
                   >
                     <MenuItem value={TRIGGER_TYPE.KEYPRESS}>Keypress</MenuItem>
                     <MenuItem value={TRIGGER_TYPE.CLICK}>Click</MenuItem>
@@ -116,22 +262,121 @@ export default function () {
                       id={"event-trigger-value-".concat(index_tile)}
                       label="Key"
                       value={event_tile.trigger.key}
+                      onChange={(e) =>
+                        dispatch(
+                          tilesUpdateEvent(
+                            triggerKeyOnChange(e, events, index_tile)
+                          )
+                        )
+                      }
                       size="medium"
                     ></TextField>
                   )}
                 </FormControl>
-                {event_tile.actions.map((action, index_action) => (
-                  <FormControl fullWidth margin="normal" component="fieldset">
-                    <FormLabel component="legend">
-                      Action {index_action}
-                    </FormLabel>
+                {event_tile.actions.map((rule, index_rule) => (
+                  <FormControl
+                    key={index_rule}
+                    fullWidth
+                    margin="normal"
+                    component="fieldset"
+                  >
+                    <FormLabel component="legend">Rule {index_rule}</FormLabel>
                     <TextField
                       fullWidth
-                      mukltiline
-                      id={"event-trigger-value-".concat(index_tile)}
+                      id={fieldId(
+                        "event-condition-value",
+                        index_tile,
+                        index_rule
+                      )}
                       label="Condition"
-                      value={JSON.stringify(action.condition)}
+                      value={rule.condition}
                       size="medium"
+                      error={
+                        error.id ===
+                        fieldId("event-condition-value", index_tile, index_rule)
+                      }
+                      onChange={(e) => {
+                        dispatch(
+                          tilesUpdateEvent(
+                            conditionOnChange(e, events, index_tile, index_rule)
+                          )
+                        );
+
+                        if (ruleIsValid(e) === false) {
+                          dispatch(
+                            updateError({
+                              id: fieldId(
+                                "event-condition-value",
+                                index_tile,
+                                index_rule
+                              ),
+                              message: "Condition is malformed",
+                            })
+                          );
+                        } else if (
+                          error.id ===
+                          fieldId(
+                            "event-condition-value",
+                            index_tile,
+                            index_rule
+                          )
+                        ) {
+                          dispatch(clearError());
+                        }
+                      }}
+                    ></TextField>
+                    <TextField
+                      fullWidth
+                      id={fieldId(
+                        "event-condition-neighbour",
+                        index_tile,
+                        index_rule
+                      )}
+                      label="Neighbour filter"
+                      value={rule.condition_neighbour}
+                      size="medium"
+                      error={
+                        error.id ===
+                        fieldId(
+                          "event-condition-neighbour",
+                          index_tile,
+                          index_rule
+                        )
+                      }
+                      onChange={(e) => {
+                        dispatch(
+                          tilesUpdateEvent(
+                            conditionNeighbourOnChange(
+                              e,
+                              events,
+                              index_tile,
+                              index_rule
+                            )
+                          )
+                        );
+
+                        if (ruleIsValid(e) === false) {
+                          dispatch(
+                            updateError({
+                              id: fieldId(
+                                "event-condition-neighbour",
+                                index_tile,
+                                index_rule
+                              ),
+                              message: "Condition is malformed",
+                            })
+                          );
+                        } else if (
+                          error.id ===
+                          fieldId(
+                            "event-condition-neighbour",
+                            index_tile,
+                            index_rule
+                          )
+                        ) {
+                          dispatch(clearError());
+                        }
+                      }}
                     ></TextField>
                     <FormControl fullWidth margin="normal" component="fieldset">
                       <FormLabel component="legend">Set value</FormLabel>
@@ -139,15 +384,56 @@ export default function () {
                         fullWidth
                         id={"event-trigger-value-".concat(index_tile)}
                         label="field"
-                        value={action.set.field}
+                        value={rule.set.field}
                         size="medium"
+                        onChange={(e) =>
+                          dispatch(
+                            tilesUpdateEvent(
+                              setOnChange(e, events, index_tile, index_rule)
+                            )
+                          )
+                        }
                       ></TextField>
                       <TextField
                         fullWidth
                         multiline
-                        id={"event-trigger-value-".concat(index_tile)}
+                        id={fieldId("event-set-rule", index_tile, index_rule)}
                         label="rule"
-                        value={JSON.stringify(action.set.rule)}
+                        value={rule.set.rule}
+                        error={
+                          fieldId("event-set-rule", index_tile, index_rule) ===
+                          error.id
+                        }
+                        onChange={(e) => {
+                          dispatch(
+                            tilesUpdateEvent(
+                              actionRuleOnChange(
+                                e,
+                                events,
+                                index_tile,
+                                index_rule
+                              )
+                            )
+                          );
+
+                          if (ruleIsValid(e) === false) {
+                            dispatch(
+                              updateError({
+                                id: fieldId(
+                                  "event-set-rule",
+                                  index_tile,
+                                  index_rule
+                                ),
+                                message: "Condition is malformed",
+                              })
+                            );
+                          } else if (
+                            error.id ===
+                            fieldId("event-set-rule", index_tile, index_rule)
+                          ) {
+                            dispatch(clearError());
+                          }
+                        }}
                         size="medium"
                       ></TextField>
                     </FormControl>
