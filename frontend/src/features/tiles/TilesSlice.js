@@ -36,7 +36,7 @@ const tilesSlice = createSlice({
         BOARD_NEIGHBOURS.B,
         BOARD_NEIGHBOURS.BR,
       ],
-      display: { type: DISPLAY_TYPE.NONE },
+      display: { type: DISPLAY_TYPE.TEXT, value: "DEAD" },
     },
     events: [
       {
@@ -44,9 +44,18 @@ const tilesSlice = createSlice({
         actions: [
           {
             condition: JSON.stringify([
-              "basic.Context",
-              ["array.Length", ["basic.Field", "@neighbours"]],
-              ["condition.In", 2, 3],
+              "boolean.And",
+              ["basic.Value", { type: DISPLAY_TYPE.TEXT, value: "DEAD" }],
+              [
+                "condition.Equal",
+                ["array.Length", ["basic.Field", "@neighbours"]],
+                3,
+              ],
+            ]),
+            condition_neighbour: JSON.stringify([
+              "condition.Equal",
+              ["basic.Field", "display"],
+              { type: DISPLAY_TYPE.TEXT, value: "ALIVE" },
             ]),
             set: {
               field: "display",
@@ -58,18 +67,51 @@ const tilesSlice = createSlice({
           },
           {
             condition: JSON.stringify([
-              "boolean.Not",
+              "boolean.And",
+              ["basic.Value", { type: DISPLAY_TYPE.TEXT, value: "ALIVE" }],
               [
-                "basic.Context",
+                "condition.In",
                 ["array.Length", ["basic.Field", "@neighbours"]],
-                ["condition.In", 2, 3],
+                [2, 3],
               ],
+              ,
+            ]),
+            condition_neighbour: JSON.stringify([
+              "condition.Equal",
+              ["basic.Field", "display"],
+              { type: DISPLAY_TYPE.TEXT, value: "ALIVE" },
             ]),
             set: {
               field: "display",
               rule: JSON.stringify([
                 "basic.Value",
-                { type: DISPLAY_TYPE.NONE },
+                { type: DISPLAY_TYPE.TEXT, value: "ALIVE" },
+              ]),
+            },
+          },
+          {
+            condition: JSON.stringify([
+              "boolean.And",
+              ["basic.Value", { type: DISPLAY_TYPE.TEXT, value: "ALIVE" }],
+              [
+                "boolean.Not",
+                [
+                  "condition.In",
+                  ["array.Length", ["basic.Field", "@neighbours"]],
+                  [2, 3],
+                ],
+              ],
+            ]),
+            condition_neighbour: JSON.stringify([
+              "condition.Equal",
+              ["basic.Field", "display"],
+              { type: DISPLAY_TYPE.TEXT, value: "ALIVE" },
+            ]),
+            set: {
+              field: "display",
+              rule: JSON.stringify([
+                "basic.Value",
+                { type: DISPLAY_TYPE.TEXT, value: "DEAD" },
               ]),
             },
           },
@@ -82,8 +124,9 @@ const tilesSlice = createSlice({
             condition: JSON.stringify([
               "condition.Equal",
               ["basic.Field", "display"],
-              { type: DISPLAY_TYPE.NONE },
+              { type: DISPLAY_TYPE.TEXT, value: "DEAD" },
             ]),
+            condition_neighbour: JSON.stringify(["boolean.Tautology"]),
             set: {
               field: "display",
               rule: JSON.stringify([
@@ -98,11 +141,12 @@ const tilesSlice = createSlice({
               ["basic.Field", "display"],
               { type: DISPLAY_TYPE.TEXT, value: "ALIVE" },
             ]),
+            condition_neighbour: JSON.stringify(["boolean.Tautology"]),
             set: {
               field: "display",
               rule: JSON.stringify([
                 "basic.Value",
-                { type: DISPLAY_TYPE.NONE },
+                { type: DISPLAY_TYPE.TEXT, value: "DEAD" },
               ]),
             },
           },
