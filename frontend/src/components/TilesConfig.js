@@ -68,7 +68,32 @@ function conditionOnChange(event, events, index_event, index_rule) {
         trigger: incoming.trigger,
         actions: incoming.actions.map((rule, idx_rule) =>
           idx_rule === index_rule
-            ? { condition: event.target.value, set: rule.set }
+            ? {
+                condition: event.target.value,
+                condition_neighbour: rule.condition_neighbour,
+                set: rule.set,
+              }
+            : rule
+        ),
+      };
+    } else {
+      return incoming;
+    }
+  });
+}
+
+function conditionNeighbourOnChange(event, events, index_event, index_rule) {
+  return events.map((incoming, idx_event) => {
+    if (idx_event === index_event) {
+      return {
+        trigger: incoming.trigger,
+        actions: incoming.actions.map((rule, idx_rule) =>
+          idx_rule === index_rule
+            ? {
+                condition: rule.condition,
+                condition_neighbour: event.target.value,
+                set: rule.set,
+              }
             : rule
         ),
       };
@@ -292,6 +317,59 @@ export default function () {
                           error.id ===
                           fieldId(
                             "event-condition-value",
+                            index_tile,
+                            index_rule
+                          )
+                        ) {
+                          dispatch(clearError());
+                        }
+                      }}
+                    ></TextField>
+                    <TextField
+                      fullWidth
+                      id={fieldId(
+                        "event-condition-neighbour",
+                        index_tile,
+                        index_rule
+                      )}
+                      label="Neighbour filter"
+                      value={rule.condition_neighbour}
+                      size="medium"
+                      error={
+                        error.id ===
+                        fieldId(
+                          "event-condition-neighbour",
+                          index_tile,
+                          index_rule
+                        )
+                      }
+                      onChange={(e) => {
+                        dispatch(
+                          tilesUpdateEvent(
+                            conditionNeighbourOnChange(
+                              e,
+                              events,
+                              index_tile,
+                              index_rule
+                            )
+                          )
+                        );
+
+                        if (ruleIsValid(e) === false) {
+                          dispatch(
+                            updateError({
+                              id: fieldId(
+                                "event-condition-neighbour",
+                                index_tile,
+                                index_rule
+                              ),
+                              message: "Condition is malformed",
+                            })
+                          );
+                        } else if (
+                          error.id ===
+                          fieldId(
+                            "event-condition-neighbour",
                             index_tile,
                             index_rule
                           )
