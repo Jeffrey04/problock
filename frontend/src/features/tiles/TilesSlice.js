@@ -45,7 +45,11 @@ const tilesSlice = createSlice({
           {
             condition: JSON.stringify([
               "boolean.And",
-              ["basic.Value", { type: DISPLAY_TYPE.TEXT, value: "DEAD" }],
+              [
+                "condition.Equal",
+                ["basic.Field", "display"],
+                { type: DISPLAY_TYPE.TEXT, value: "DEAD" },
+              ],
               [
                 "condition.Equal",
                 ["array.Length", ["basic.Field", "@neighbours"]],
@@ -68,7 +72,11 @@ const tilesSlice = createSlice({
           {
             condition: JSON.stringify([
               "boolean.And",
-              ["basic.Value", { type: DISPLAY_TYPE.TEXT, value: "ALIVE" }],
+              [
+                "condition.Equal",
+                ["basic.Field", "display"],
+                { type: DISPLAY_TYPE.TEXT, value: "ALIVE" },
+              ],
               [
                 "condition.In",
                 ["array.Length", ["basic.Field", "@neighbours"]],
@@ -92,7 +100,11 @@ const tilesSlice = createSlice({
           {
             condition: JSON.stringify([
               "boolean.And",
-              ["basic.Value", { type: DISPLAY_TYPE.TEXT, value: "ALIVE" }],
+              [
+                "condition.Equal",
+                ["basic.Field", "display"],
+                { type: DISPLAY_TYPE.TEXT, value: "ALIVE" },
+              ],
               [
                 "boolean.Not",
                 [
