@@ -1,3 +1,4 @@
+import { Container, Drawer, TextField } from "@material-ui/core";
 import {
   DISPLAY_TYPE,
   TRIGGER_TYPE,
@@ -9,16 +10,12 @@ import { GAME_CONFIG, UIUpdateConfig } from "../features/ui/UISlice";
 import { clearError, updateError } from "../features/error/ErrorSlice";
 import { useDispatch, useSelector } from "react-redux";
 
-import Container from "@material-ui/core/Container";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 import MenuItem from "@material-ui/core/MenuItem";
-import Modal from "@material-ui/core/Modal";
-import Paper from "@material-ui/core/Paper";
 import React from "react";
-import { TextField } from "@material-ui/core";
 import TilePropertyNeighbours from "./TilePropertyNeighbours";
 import Typography from "@material-ui/core/Typography";
 import ruler from "ruler";
@@ -163,190 +160,247 @@ export default function () {
   const error = useSelector((state) => state.error);
 
   return (
-    <Modal
+    <Drawer
       open={isOpened}
       onClose={() => dispatch(UIUpdateConfig({ type: GAME_CONFIG.NONE }))}
-      aria-labelledby="simple-modal-title"
-      aria-describedby="simple-modal-description"
+      anchor="right"
+      PaperProps={{ style: { width: "33.3%" } }}
     >
-      <Paper
-        elevation={3}
-        square
-        style={{ margin: "1em auto", padding: "1em 0", width: "66.7%" }}
-      >
-        <Container>
-          <form noValidate autoComplete="off">
-            <Typography variant="h2">General Tiles Configuration</Typography>
-            <Typography variant="h3">Properties</Typography>
-            <div>
-              <TilePropertyNeighbours
-                neighbours={properties.neighbours}
-                action={(neighbours) =>
-                  tilesUpdatePropertyNeighbours(neighbours)
-                }
-              />
-              <FormControl fullWidth margin="normal" component="fieldset">
-                <FormLabel component="legend">@display</FormLabel>
-                <GridList cellHeight="auto" cols={3}>
-                  <GridListTile>
-                    <TextField
-                      fullWidth
-                      select
-                      id="tile-display-type"
-                      label="Type"
-                      value={properties.display.type}
-                      onChange={(event) =>
-                        dispatch(
-                          tilesUpdateDisplay({ type: event.target.value })
-                        )
-                      }
-                      size="medium"
-                    >
-                      <MenuItem value={DISPLAY_TYPE.NONE}>Empty</MenuItem>
-                      <MenuItem value={DISPLAY_TYPE.TEXT}>Text</MenuItem>
-                      <MenuItem value={DISPLAY_TYPE.EMOJI}>Emoji</MenuItem>
-                    </TextField>
-                  </GridListTile>
-                  {properties.display.type === DISPLAY_TYPE.TEXT && (
-                    <GridListTile>
-                      <TextField
-                        value={properties.display.value || ""}
-                        label="Value"
-                        onChange={(event) =>
-                          dispatch(
-                            tilesUpdateDisplay(
-                              Object.assign({}, properties.display, {
-                                value: event.target.value,
-                              })
-                            )
-                          )
-                        }
-                      ></TextField>
-                    </GridListTile>
-                  )}
-                </GridList>
-              </FormControl>
-            </div>
-            <Typography variant="h3">Events</Typography>
-            {events.map((event_tile, index_tile) => (
-              <FormControl
-                key={index_tile}
-                fullWidth
-                margin="normal"
-                component="fieldset"
-              >
-                <FormLabel component="legend">Event {index_tile + 1}</FormLabel>
-                <FormControl fullWidth margin="normal" component="fieldset">
-                  <FormLabel component="legend">Trigger</FormLabel>
+      <Container>
+        <form noValidate autoComplete="off">
+          <Typography variant="h5" component="h2">
+            General Tiles Configuration
+          </Typography>
+          <Typography variant="h6" component="h3">
+            Properties
+          </Typography>
+          <TilePropertyNeighbours
+            neighbours={properties.neighbours}
+            action={(neighbours) => tilesUpdatePropertyNeighbours(neighbours)}
+          />
+          <FormControl fullWidth margin="normal" component="fieldset">
+            <FormLabel component="legend">@display</FormLabel>
+            <GridList cellHeight="auto" cols={3}>
+              <GridListTile>
+                <TextField
+                  fullWidth
+                  select
+                  id="tile-display-type"
+                  label="Type"
+                  value={properties.display.type}
+                  onChange={(event) =>
+                    dispatch(tilesUpdateDisplay({ type: event.target.value }))
+                  }
+                  size="medium"
+                >
+                  <MenuItem value={DISPLAY_TYPE.NONE}>Empty</MenuItem>
+                  <MenuItem value={DISPLAY_TYPE.TEXT}>Text</MenuItem>
+                  <MenuItem value={DISPLAY_TYPE.EMOJI}>Emoji</MenuItem>
+                </TextField>
+              </GridListTile>
+              {properties.display.type === DISPLAY_TYPE.TEXT && (
+                <GridListTile>
                   <TextField
-                    fullWidth
-                    select
-                    id={"event-trigger-type-".concat(index_tile)}
-                    label="Type"
-                    value={event_tile.trigger.type}
-                    size="medium"
-                    onChange={(e) =>
+                    value={properties.display.value || ""}
+                    label="Value"
+                    onChange={(event) =>
                       dispatch(
-                        tilesUpdateEvent(
-                          triggerTypeOnChange(e, events, index_tile)
+                        tilesUpdateDisplay(
+                          Object.assign({}, properties.display, {
+                            value: event.target.value,
+                          })
                         )
                       )
                     }
-                  >
-                    <MenuItem value={TRIGGER_TYPE.KEYPRESS}>Keypress</MenuItem>
-                    <MenuItem value={TRIGGER_TYPE.CLICK}>Click</MenuItem>
-                  </TextField>
-                  {event_tile.trigger.type === TRIGGER_TYPE.KEYPRESS && (
-                    <TextField
-                      fullWidth
-                      id={"event-trigger-value-".concat(index_tile)}
-                      label="Key"
-                      value={event_tile.trigger.key}
-                      onChange={(e) =>
-                        dispatch(
-                          tilesUpdateEvent(
-                            triggerKeyOnChange(e, events, index_tile)
-                          )
-                        )
-                      }
-                      size="medium"
-                    ></TextField>
-                  )}
-                </FormControl>
-                {event_tile.actions.map((rule, index_rule) => (
-                  <FormControl
-                    key={index_rule}
+                  ></TextField>
+                </GridListTile>
+              )}
+            </GridList>
+          </FormControl>
+          <Typography variant="h6" component="h3">
+            Events
+          </Typography>
+          {events.map((event_tile, index_tile) => (
+            <FormControl
+              key={index_tile}
+              fullWidth
+              margin="normal"
+              component="fieldset"
+            >
+              <FormLabel component="legend">Event {index_tile + 1}</FormLabel>
+              <FormControl fullWidth margin="normal" component="fieldset">
+                <FormLabel component="legend">Trigger</FormLabel>
+                <TextField
+                  fullWidth
+                  select
+                  id={"event-trigger-type-".concat(index_tile)}
+                  label="Type"
+                  value={event_tile.trigger.type}
+                  size="medium"
+                  onChange={(e) =>
+                    dispatch(
+                      tilesUpdateEvent(
+                        triggerTypeOnChange(e, events, index_tile)
+                      )
+                    )
+                  }
+                >
+                  <MenuItem value={TRIGGER_TYPE.KEYPRESS}>Keypress</MenuItem>
+                  <MenuItem value={TRIGGER_TYPE.CLICK}>Click</MenuItem>
+                </TextField>
+                {event_tile.trigger.type === TRIGGER_TYPE.KEYPRESS && (
+                  <TextField
                     fullWidth
-                    margin="normal"
-                    component="fieldset"
-                  >
-                    <FormLabel component="legend">Rule {index_rule}</FormLabel>
-                    <TextField
-                      fullWidth
-                      id={fieldId(
-                        "event-condition-value",
-                        index_tile,
-                        index_rule
-                      )}
-                      label="Condition"
-                      value={rule.condition}
-                      size="medium"
-                      error={
+                    id={"event-trigger-value-".concat(index_tile)}
+                    label="Key"
+                    value={event_tile.trigger.key}
+                    onChange={(e) =>
+                      dispatch(
+                        tilesUpdateEvent(
+                          triggerKeyOnChange(e, events, index_tile)
+                        )
+                      )
+                    }
+                    size="medium"
+                  ></TextField>
+                )}
+              </FormControl>
+              {event_tile.actions.map((rule, index_rule) => (
+                <FormControl
+                  key={index_rule}
+                  fullWidth
+                  margin="normal"
+                  component="fieldset"
+                >
+                  <FormLabel component="legend">Rule {index_rule}</FormLabel>
+                  <TextField
+                    multiline
+                    rows={3}
+                    fullWidth
+                    id={fieldId(
+                      "event-condition-value",
+                      index_tile,
+                      index_rule
+                    )}
+                    label="Condition"
+                    value={rule.condition}
+                    size="medium"
+                    error={
+                      error.id ===
+                      fieldId("event-condition-value", index_tile, index_rule)
+                    }
+                    onChange={(e) => {
+                      dispatch(
+                        tilesUpdateEvent(
+                          conditionOnChange(e, events, index_tile, index_rule)
+                        )
+                      );
+
+                      if (ruleIsValid(e) === false) {
+                        dispatch(
+                          updateError({
+                            id: fieldId(
+                              "event-condition-value",
+                              index_tile,
+                              index_rule
+                            ),
+                            message: "Condition is malformed",
+                          })
+                        );
+                      } else if (
                         error.id ===
                         fieldId("event-condition-value", index_tile, index_rule)
+                      ) {
+                        dispatch(clearError());
                       }
-                      onChange={(e) => {
-                        dispatch(
-                          tilesUpdateEvent(
-                            conditionOnChange(e, events, index_tile, index_rule)
-                          )
-                        );
-
-                        if (ruleIsValid(e) === false) {
-                          dispatch(
-                            updateError({
-                              id: fieldId(
-                                "event-condition-value",
-                                index_tile,
-                                index_rule
-                              ),
-                              message: "Condition is malformed",
-                            })
-                          );
-                        } else if (
-                          error.id ===
-                          fieldId(
-                            "event-condition-value",
-                            index_tile,
-                            index_rule
-                          )
-                        ) {
-                          dispatch(clearError());
-                        }
-                      }}
-                    ></TextField>
-                    <TextField
-                      fullWidth
-                      id={fieldId(
+                    }}
+                  ></TextField>
+                  <TextField
+                    multiline
+                    rows={3}
+                    fullWidth
+                    id={fieldId(
+                      "event-condition-neighbour",
+                      index_tile,
+                      index_rule
+                    )}
+                    label="Neighbour filter"
+                    value={rule.condition_neighbour}
+                    size="medium"
+                    error={
+                      error.id ===
+                      fieldId(
                         "event-condition-neighbour",
                         index_tile,
                         index_rule
-                      )}
-                      label="Neighbour filter"
-                      value={rule.condition_neighbour}
-                      size="medium"
-                      error={
+                      )
+                    }
+                    onChange={(e) => {
+                      dispatch(
+                        tilesUpdateEvent(
+                          conditionNeighbourOnChange(
+                            e,
+                            events,
+                            index_tile,
+                            index_rule
+                          )
+                        )
+                      );
+
+                      if (ruleIsValid(e) === false) {
+                        dispatch(
+                          updateError({
+                            id: fieldId(
+                              "event-condition-neighbour",
+                              index_tile,
+                              index_rule
+                            ),
+                            message: "Condition is malformed",
+                          })
+                        );
+                      } else if (
                         error.id ===
                         fieldId(
                           "event-condition-neighbour",
                           index_tile,
                           index_rule
                         )
+                      ) {
+                        dispatch(clearError());
+                      }
+                    }}
+                  ></TextField>
+                  <FormControl fullWidth margin="normal" component="fieldset">
+                    <FormLabel component="legend">Set value</FormLabel>
+                    <TextField
+                      fullWidth
+                      id={"event-trigger-value-".concat(index_tile)}
+                      label="field"
+                      value={rule.set.field}
+                      size="medium"
+                      onChange={(e) =>
+                        dispatch(
+                          tilesUpdateEvent(
+                            setOnChange(e, events, index_tile, index_rule)
+                          )
+                        )
+                      }
+                    ></TextField>
+                    <TextField
+                      multiline
+                      rows={3}
+                      fullWidth
+                      id={fieldId("event-set-rule", index_tile, index_rule)}
+                      label="rule"
+                      value={rule.set.rule}
+                      error={
+                        fieldId("event-set-rule", index_tile, index_rule) ===
+                        error.id
                       }
                       onChange={(e) => {
                         dispatch(
                           tilesUpdateEvent(
-                            conditionNeighbourOnChange(
+                            actionRuleOnChange(
                               e,
                               events,
                               index_tile,
@@ -359,7 +413,7 @@ export default function () {
                           dispatch(
                             updateError({
                               id: fieldId(
-                                "event-condition-neighbour",
+                                "event-set-rule",
                                 index_tile,
                                 index_rule
                               ),
@@ -368,83 +422,20 @@ export default function () {
                           );
                         } else if (
                           error.id ===
-                          fieldId(
-                            "event-condition-neighbour",
-                            index_tile,
-                            index_rule
-                          )
+                          fieldId("event-set-rule", index_tile, index_rule)
                         ) {
                           dispatch(clearError());
                         }
                       }}
+                      size="medium"
                     ></TextField>
-                    <FormControl fullWidth margin="normal" component="fieldset">
-                      <FormLabel component="legend">Set value</FormLabel>
-                      <TextField
-                        fullWidth
-                        id={"event-trigger-value-".concat(index_tile)}
-                        label="field"
-                        value={rule.set.field}
-                        size="medium"
-                        onChange={(e) =>
-                          dispatch(
-                            tilesUpdateEvent(
-                              setOnChange(e, events, index_tile, index_rule)
-                            )
-                          )
-                        }
-                      ></TextField>
-                      <TextField
-                        fullWidth
-                        multiline
-                        id={fieldId("event-set-rule", index_tile, index_rule)}
-                        label="rule"
-                        value={rule.set.rule}
-                        error={
-                          fieldId("event-set-rule", index_tile, index_rule) ===
-                          error.id
-                        }
-                        onChange={(e) => {
-                          dispatch(
-                            tilesUpdateEvent(
-                              actionRuleOnChange(
-                                e,
-                                events,
-                                index_tile,
-                                index_rule
-                              )
-                            )
-                          );
-
-                          if (ruleIsValid(e) === false) {
-                            dispatch(
-                              updateError({
-                                id: fieldId(
-                                  "event-set-rule",
-                                  index_tile,
-                                  index_rule
-                                ),
-                                message: "Condition is malformed",
-                              })
-                            );
-                          } else if (
-                            error.id ===
-                            fieldId("event-set-rule", index_tile, index_rule)
-                          ) {
-                            dispatch(clearError());
-                          }
-                        }}
-                        size="medium"
-                      ></TextField>
-                    </FormControl>
                   </FormControl>
-                ))}
-              </FormControl>
-            ))}
-            <Typography variant="body1">Some quick board properties</Typography>
-          </form>
-        </Container>
-      </Paper>
-    </Modal>
+                </FormControl>
+              ))}
+            </FormControl>
+          ))}
+        </form>
+      </Container>
+    </Drawer>
   );
 }

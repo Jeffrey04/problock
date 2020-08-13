@@ -17,6 +17,7 @@ import Typography from "@material-ui/core/Typography";
 export default function () {
   const boardState = useSelector((state) => state.ui.state);
   const dispatch = useDispatch();
+  const properties = useSelector((state) => state.board.properties);
 
   return (
     <React.Fragment>
@@ -27,7 +28,7 @@ export default function () {
       <TilesConfig />
       <Container fixed>
         <Typography variant="h1">Problock</Typography>
-        <Board rows={4} columns={4} />
+        <Board rows={properties.rows} columns={properties.columns} />
       </Container>
       {/*
       <Fab
