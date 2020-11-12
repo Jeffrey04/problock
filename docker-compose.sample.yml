@@ -1,0 +1,16 @@
+version: "2"
+services:
+  frontend:
+    image: caddy
+    ports:
+      - "0.0.0.0:780:80"
+    volumes:
+      - "./frontend/build:/srv"
+      - './frontend/Caddyfile:/etc/caddy/Caddyfile'
+    restart: "always"
+
+  backend:
+    build: ./backend
+    image: problock-backend
+    ports:
+      - "8000:8000"
