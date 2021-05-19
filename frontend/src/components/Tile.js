@@ -15,7 +15,7 @@ import React from "react";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Typography from "@material-ui/core/Typography";
 import _ from "lodash";
-import ruler from "ruler";
+import ruler from "@jeffrey04/ruler";
 import { tileUpdateProperties } from "../features/tiles/TileSlice";
 
 function showActions(handleClick) {

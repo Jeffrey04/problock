@@ -18,7 +18,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import React from "react";
 import TilePropertyNeighbours from "./TilePropertyNeighbours";
 import Typography from "@material-ui/core/Typography";
-import ruler from "ruler";
+import ruler from "@jeffrey04/ruler";
 
 function fieldId(field_name, index_event, index_action) {
   return field_name

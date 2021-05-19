@@ -7,7 +7,7 @@ import React from "react";
 import Tile from "./Tile";
 import { Typography } from "@material-ui/core";
 import _ from "lodash";
-import ruler from "ruler";
+import ruler from "@jeffrey04/ruler";
 import { tileUpdateProperties } from "../features/tiles/TileSlice";
 
 export function populateNeighbours([row, column], rows, columns, properties) {
